@@ -41,6 +41,20 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit( 'You shall not pass' );
 }
 
+if ( ! is_admin() ) {
+	return;
+}
+
+if ( ! function_exists( 'xdebug_get_code_coverage' ) ) {
+	add_action( 'admin_notices', function () {
+		?>
+		<div class="notice notice-warning is-dismissible">
+			<p><strong><?php esc_html_e( 'Apermo Xdebug:', 'apermo-xdebug' ); ?></strong> <?php echo esc_html_x( 'Xdebug is not active.', 'Will be shown as admin notice in case Xdebug wasn\'t automatically detected.', 'apermo-xdebug' ); ?></p>
+		</div>
+		<?php
+	} );
+	return;
+}
 /**
  * Class ApermoXdebug
  *
@@ -61,34 +75,53 @@ class ApermoXdebug {
 	 */
 	public function print_css() {
 		?>
-		<style>
+		<style id="apermo-xdebug">
 			.xdebug-error {
-				float: right;
 				width: calc( 100vw - 200px );
 				margin-right: 20px;
 				margin-bottom: 20px;
 				position: relative;
 				z-index: 9991;
+				margin-left: 180px;
+			}
+			.xdebug-error:after {
+				display:block;
+				content: '';
+				clear:both;
 			}
 			/* Had to move this a bit, otherwise links wouldn't be clickable in the Xdebug notice */
 			#adminmenuwrap {
 				z-index: 9992;
+				top: 32px;
 			}
 
-			.sticky-menu.auto-fold .xdebug-error, .folded .xdebug-error {
+			.folded .xdebug-error {
 				width: calc( 100vw - 80px );
-
+				margin-left: 60px;
+			}
+			.xdebug-error .apermo-xdebug-link {
+				display: inline-block;
+				color: #333;
+				background: #eee;
+				border: 2px solid #333;
+				padding: 5px;
+				text-decoration: none;
+				margin: 10px 0 10px 10px;
+			}
+			.xdebug-error .apermo-xdebug-link:first-of-type {
+				margin-left: 0;
+			}
+			@media screen and (max-width: 960px) {
+				.auto-fold .xdebug-error {
+					width: calc( 100vw - 80px );
+					margin-left: 60px;
+				}
 			}
 			@media screen and (max-width: 782px) {
 				.auto-fold .xdebug-error {
 					margin-right: 10px;
-					width: calc( 100vw - 20px );
-				}
-			}
-			@media screen and (max-width: 600px) {
-				.xdebug-error {
-					float: none;
 					margin-left: 10px;
+					width: calc( 100vw - 20px );
 				}
 			}
 		</style>
@@ -103,19 +136,25 @@ class ApermoXdebug {
 		?>
 		<script type="text/javascript">
 			jQuery(document).ready(function ($) {
+				setTimeout(function () {
+					if ( ! $('.xdebug-error').length ) {
+						$( '#apermo-xdebug').remove();
+					}
+				},500);
 				const wp_path = '<?php echo esc_url( get_home_path() ); ?>';
-				console.log( wp_path );
 				$('.xdebug-error').each(function () {
-					var search_term = encodeURI (
-						$(this).find('tr:first-of-type th').html()
-							.replace( wp_path, '/' )
-							.replace(/<\/?[^>]+(>|$)/g, '')
-							.replace( '( ! )', '' )
-							.trim()
-					);
+					var regex = new RegExp( wp_path, 'g' ),
+						search_term = encodeURI (
+							$(this).find('tr:first-of-type th').html()
+								.replace( regex, '/' )
+								.replace(/<\/?[^>]+(>|$)/g, '')
+								.replace( '( ! )', '' )
+								.trim()
+						);
 					$(this).find('tr:first-of-type th')
-						.append('<br><a href="https://www.google.de/search?q='+search_term+'" target="_blank">Google for the Error</a>')
-						.append(' <a href="https://stackoverflow.com/search?q='+search_term+'" target="_blank">Search Stackoverflow for the Error</a>');
+						.append('<br>')
+						.append('<a href="https://www.google.de/search?q='+search_term+'" class="apermo-xdebug-link" target="_blank">Search Google</a>')
+						.append('<a href="https://stackoverflow.com/search?q='+search_term+'" class="apermo-xdebug-link" target="_blank">Search Stackoverflow</a>');
 				});
 			});
 		</script>
