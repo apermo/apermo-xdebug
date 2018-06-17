@@ -3,7 +3,7 @@
 * Tags: admin, developer, development, debug, debugging, xdebug
 * Requires at least: 4.6.0
 * Tested up to: 4.9.6
-* Stable tag: 1.0.1
+* Stable tag: 1.1.0
 * License: GNU General Public License v2 or later
 * License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -37,6 +37,10 @@ Will be fixed in an upcoming release.
 
 ### I have an issue, or I want to help with the development of this plugin. ###
 Head over to the [GitHub Repository](https://github.com/apermo/apermo-xdebug) and start reading. Every bit of help is highly appreciated!
+
+### Note on the Version Requirement ###
+
+The Plugin will actually work with lower WordPress Versions, but in that case translations won't work. But you should consider upgrading you WordPress in that case.
 
 ## Changelog ##
 
