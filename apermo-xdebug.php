@@ -10,7 +10,7 @@
  * @wordpress-plugin
  * Plugin Name: Apermo Xdebug
  * Plugin URI:  https://wordpress.org/plugins/apermo-xdebug/
- * Version:     1.1.0
+ * Version:     1.2.0
  * Description: Indents xDebug messages inside the backend, so that these are no longer partly hidden underneath the admin menu. And it will also give you links to directly search for the error message on Google or Stackoverflow.
  * Author:      Christoph Daum
  * Author URI:  https://christoph-daum.de
@@ -45,6 +45,17 @@ if ( ! is_admin() ) {
 	return;
 }
 
+if ( ! ini_get( 'display_errors' ) ) {
+	add_action( 'admin_notices', function () {
+		?>
+		<div class="notice notice-warning is-dismissible">
+			<p><strong><?php esc_html_e( 'Apermo Xdebug:', 'apermo-xdebug' ); ?></strong> <?php echo esc_html_x( '"display_errors" is disabled.', 'Will be shown as admin notice if the php.ini setting display_errors is false.', 'apermo-xdebug' ); ?></p>
+		</div>
+		<?php
+	} );
+	return;
+}
+
 if ( ! function_exists( 'xdebug_get_code_coverage' ) ) {
 	add_action( 'admin_notices', function () {
 		?>
@@ -62,11 +73,32 @@ if ( ! function_exists( 'xdebug_get_code_coverage' ) ) {
  */
 class ApermoXdebug {
 	/**
+	 * Store the search engines.
+	 *
+	 * @var $search_urls
+	 */
+	private $search_urls;
+
+	/**
 	 * ApermoXdebug constructor.
 	 */
 	public function __construct() {
 		add_action( 'admin_head', array( $this, 'print_css' ) );
 		add_action( 'admin_head', array( $this, 'print_javascript' ) );
+
+		$this->search_urls = apply_filters(
+			'apermo_xdebug_search_urls',
+			[
+				'google' => [
+					'url' => 'https://www.google.com/search?q=\'+search_term+\'',
+					'label' => __( 'Search on Google', 'apermo-xdebug' ),
+				],
+				'stackoverflow' => [
+					'url' => 'https://www.stackoverflow.com/search?q=\'+search_term+\'',
+					'label' => __( 'Search on Stackoverflow', 'apermo-xdebug' ),
+				],
+			]
+		);
 	}
 
 	/**
@@ -151,10 +183,15 @@ class ApermoXdebug {
 								.replace( '( ! )', '' )
 								.trim()
 						);
-					$(this).find('tr:first-of-type th')
-						.append('<br>')
-						.append('<a href="https://www.google.de/search?q='+search_term+'" class="apermo-xdebug-link" target="_blank">Search Google</a>')
-						.append('<a href="https://stackoverflow.com/search?q='+search_term+'" class="apermo-xdebug-link" target="_blank">Search Stackoverflow</a>');
+					var $th = $(this).find('tr:first-of-type th');
+					$th.append('<br>');
+					<?php
+					foreach ( $this->search_urls as $search_url ) {
+					?>
+					$th.append('<a href="<?php echo $search_url['url']; ?>" class="apermo-xdebug-link" target="_blank"><?php echo esc_html( $search_url['label'] ); ?></a>');
+					<?php
+					}
+					?>
 				});
 			});
 		</script>
