@@ -10,7 +10,7 @@
  * @wordpress-plugin
  * Plugin Name: Apermo Xdebug
  * Plugin URI:  https://wordpress.org/plugins/apermo-xdebug/
- * Version:     1.2.0
+ * Version:     1.2.1
  * Description: Indents xDebug messages inside the backend, so that these are no longer partly hidden underneath the admin menu. And it will also give you links to directly search for the error message on Google or Stackoverflow.
  * Author:      Christoph Daum
  * Author URI:  https://christoph-daum.de
@@ -108,7 +108,7 @@ class ApermoXdebug {
 	public function print_css() {
 		?>
 		<style id="apermo-xdebug">
-			.xdebug-error {
+			.xdebug-error, .xdebug-var-dump {
 				width: calc( 100vw - 200px );
 				margin-right: 20px;
 				margin-bottom: 20px;
@@ -116,7 +116,7 @@ class ApermoXdebug {
 				z-index: 9991;
 				margin-left: 180px;
 			}
-			.xdebug-error:after {
+			.xdebug-error:after, .xdebug-var-dump:after  {
 				display:block;
 				content: '';
 				clear:both;
@@ -127,7 +127,8 @@ class ApermoXdebug {
 				top: 32px;
 			}
 
-			.folded .xdebug-error {
+			.folded .xdebug-error,
+			.folded .xdebug-var-dump {
 				width: calc( 100vw - 80px );
 				margin-left: 60px;
 			}
@@ -144,13 +145,15 @@ class ApermoXdebug {
 				margin-left: 0;
 			}
 			@media screen and (max-width: 960px) {
-				.auto-fold .xdebug-error {
+				.auto-fold .xdebug-error,
+				.auto-fold .xdebug-var-dump {
 					width: calc( 100vw - 80px );
 					margin-left: 60px;
 				}
 			}
 			@media screen and (max-width: 782px) {
-				.auto-fold .xdebug-error {
+				.auto-fold .xdebug-error,
+				.auto-fold .xdebug-var-dump {
 					margin-right: 10px;
 					margin-left: 10px;
 					width: calc( 100vw - 20px );
