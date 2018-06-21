@@ -10,7 +10,7 @@
  * @wordpress-plugin
  * Plugin Name: Apermo Xdebug
  * Plugin URI:  https://wordpress.org/plugins/apermo-xdebug/
- * Version:     1.2.1
+ * Version:     1.2.2
  * Description: Indents xDebug messages inside the backend, so that these are no longer partly hidden underneath the admin menu. And it will also give you links to directly search for the error message on Google or Stackoverflow.
  * Author:      Christoph Daum
  * Author URI:  https://christoph-daum.de
@@ -172,7 +172,7 @@ class ApermoXdebug {
 		<script type="text/javascript">
 			jQuery(document).ready(function ($) {
 				setTimeout(function () {
-					if ( ! $('.xdebug-error').length ) {
+					if ( ! $('.xdebug-error, .xdebug-var-dump').length ) {
 						$( '#apermo-xdebug').remove();
 					}
 				},500);
